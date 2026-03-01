@@ -6,7 +6,7 @@ function Badge({ label, colorClass }) {
   );
 }
 
-function MetricCard({ label, badge, valueMain, valueSub, netRevenue, npv, highlight }) {
+function MetricCard({ label, badge, valueMain, valueSub, netRevenue, npv, highlight, hasData }) {
   const npvPositive = npv > 0;
   const npvClass = npvPositive ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-red-700 bg-red-50 border-red-200';
 
@@ -23,10 +23,10 @@ function MetricCard({ label, badge, valueMain, valueSub, netRevenue, npv, highli
       {valueSub && <p className="text-xs text-gray-400 mt-0.5">{valueSub}</p>}
       <div className="mt-2 pt-2 border-t border-gray-200 space-y-1.5">
         <p className="text-xs text-gray-500">
-          Net Revenue: <span className="text-sm font-bold text-navy">{fmtMoneyMM(netRevenue)}</span>
+          Net Revenue: <span className="text-sm font-bold text-navy">{hasData ? fmtMoneyMM(netRevenue) : '\u2014'}</span>
         </p>
-        <p className={`text-xs font-bold border rounded px-2 py-1 inline-block ${npvClass}`}>
-          NPV: {fmtMoneyMM(npv)}
+        <p className={`text-xs font-bold border rounded px-2 py-1 inline-block ${hasData ? npvClass : 'text-gray-500 bg-gray-100 border-gray-200'}`}>
+          NPV: {hasData ? fmtMoneyMM(npv) : '\u2014'}
         </p>
       </div>
     </div>
@@ -99,9 +99,9 @@ export default function ResultsPanel({ results, inputs }) {
 
       <h3 className="text-xs font-bold text-navy uppercase tracking-widest mb-3">Recoverable Reserves &amp; Economics</h3>
 
-      <MetricCard label="1P Reserves" badge={<Badge label="Proved" colorClass="bg-red-100 text-red-700" />} valueMain={hasData ? fmt(r1p) : '\u2014'} valueSub={hasData ? `RF = ${inputs.rfLow}%` : null} netRevenue={netRevenue1pMM} npv={npv1pMM} />
-      <MetricCard label="2P Reserves" badge={<Badge label="Proved + Probable" colorClass="bg-amber-100 text-amber-700" />} valueMain={hasData ? fmt(r2p) : '\u2014'} valueSub={hasData ? `RF = ${inputs.rfBest}%` : null} netRevenue={netRevenue2pMM} npv={npv2pMM} highlight />
-      <MetricCard label="3P Reserves" badge={<Badge label="Proved + Probable + Possible" colorClass="bg-emerald-100 text-emerald-700" />} valueMain={hasData ? fmt(r3p) : '\u2014'} valueSub={hasData ? `RF = ${inputs.rfHigh}%` : null} netRevenue={netRevenue3pMM} npv={npv3pMM} />
+      <MetricCard label="1P Reserves" badge={<Badge label="Proved" colorClass="bg-red-100 text-red-700" />} valueMain={hasData ? fmt(r1p) : '\u2014'} valueSub={hasData ? `RF = ${inputs.rfLow}%` : null} netRevenue={netRevenue1pMM} npv={npv1pMM} hasData={hasData} />
+      <MetricCard label="2P Reserves" badge={<Badge label="Proved + Probable" colorClass="bg-amber-100 text-amber-700" />} valueMain={hasData ? fmt(r2p) : '\u2014'} valueSub={hasData ? `RF = ${inputs.rfBest}%` : null} netRevenue={netRevenue2pMM} npv={npv2pMM} hasData={hasData} highlight />
+      <MetricCard label="3P Reserves" badge={<Badge label="Proved + Probable + Possible" colorClass="bg-emerald-100 text-emerald-700" />} valueMain={hasData ? fmt(r3p) : '\u2014'} valueSub={hasData ? `RF = ${inputs.rfHigh}%` : null} netRevenue={netRevenue3pMM} npv={npv3pMM} hasData={hasData} />
 
       <div className="mt-auto pt-3 space-y-3">
         <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
