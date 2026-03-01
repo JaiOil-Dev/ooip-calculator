@@ -10,15 +10,52 @@ export function calcOOIP({ area, netPay, porosity, sw, bo }) {
     return (7758 * area * netPay * phi * (1 - Sw)) / bo;
 }
 
-export function calcReserves(ooipSTB, rfLow, rfBest, rfHigh, oilPrice) {
+export function calcReserves(ooipSTB, rfLow, rfBest, rfHigh, economics, scenarioRf) {
     const ooipMMSTB = ooipSTB / 1e6;
     const r1p = ooipMMSTB * (rfLow / 100);
     const r2p = ooipMMSTB * (rfBest / 100);
     const r3p = ooipMMSTB * (rfHigh / 100);
-    const rev1p = r1p * 1e6 * oilPrice;
-    const rev2p = r2p * 1e6 * oilPrice;
-    const rev3p = r3p * 1e6 * oilPrice;
-    return { ooipSTB, ooipMMSTB, r1p, r2p, r3p, rev1p, rev2p, rev3p };
+    const scenarioReserves = ooipMMSTB * (scenarioRf / 100);
+
+    const to2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+    const r1pRounded = to2(r1p);
+    const r2pRounded = to2(r2p);
+    const r3pRounded = to2(r3p);
+    const scenarioReservesRounded = to2(scenarioReserves);
+
+    const royaltyFraction = (economics.royalty || 0) / 100;
+    const netRevenuePerBbl = (economics.oilPrice || 0) * (1 - royaltyFraction) - (economics.opex || 0);
+
+    const netRevenue1pMM = r1pRounded * netRevenuePerBbl;
+    const netRevenue2pMM = r2pRounded * netRevenuePerBbl;
+    const netRevenue3pMM = r3pRounded * netRevenuePerBbl;
+    const scenarioNetRevenueMM = scenarioReservesRounded * netRevenuePerBbl;
+
+    const npv1pMM = netRevenue1pMM - (economics.capex || 0);
+    const npv2pMM = netRevenue2pMM - (economics.capex || 0);
+    const npv3pMM = netRevenue3pMM - (economics.capex || 0);
+    const scenarioNpvMM = scenarioNetRevenueMM - (economics.capex || 0);
+
+    const isEconomic = netRevenuePerBbl >= 0;
+
+    return {
+        ooipSTB,
+        ooipMMSTB,
+        r1p,
+        r2p,
+        r3p,
+        scenarioReserves,
+        netRevenuePerBbl,
+        netRevenue1pMM,
+        netRevenue2pMM,
+        netRevenue3pMM,
+        scenarioNetRevenueMM,
+        npv1pMM,
+        npv2pMM,
+        npv3pMM,
+        scenarioNpvMM,
+        isEconomic,
+    };
 }
 
 export function calcSensitivity({ area, netPay, porosity, sw, bo }) {
@@ -46,12 +83,14 @@ export function calcSensitivity({ area, netPay, porosity, sw, bo }) {
 
 export const ORINOCO_DEFAULTS = {
     area: 50000, netPay: 80, porosity: 32, sw: 15, bo: 1.05,
-    rfLow: 8, rfBest: 35, rfHigh: 55, oilPrice: 65,
+    rfLow: 8, rfBest: 35, rfHigh: 55, rfScenario: 35,
+    oilPrice: 65, royalty: 16.67, opex: 12, capex: 50, discountRate: 10,
 };
 
 export const DEFAULT_INPUTS = {
     area: '', netPay: '', porosity: '', sw: '', bo: 1.05,
-    rfLow: 15, rfBest: 35, rfHigh: 55, oilPrice: 70,
+    rfLow: 15, rfBest: 35, rfHigh: 55, rfScenario: 35,
+    oilPrice: 70, royalty: 16.67, opex: 12, capex: 50, discountRate: 10,
 };
 
 export const TOOLTIPS = {
@@ -63,5 +102,9 @@ export const TOOLTIPS = {
     rfLow: 'Recovery Factor (P90) - conservative estimate. Ranges from 8% for early thermal heavy oil to 80% with optimized ES-SAGD.',
     rfBest: 'Recovery Factor (P50) - best estimate. The fraction of OOIP recoverable under most likely development scenario.',
     rfHigh: 'Recovery Factor (P10) - optimistic estimate. The fraction of OOIP recoverable under favorable conditions.',
-    oilPrice: 'Used for commercial summary only. Does not affect OOIP or reserves calculation.',
+    oilPrice: 'Assumed realized oil price for simplified economic screening.',
+    royalty: 'Government or contractual royalty deducted from gross revenue.',
+    opex: 'Operating expenditure per produced barrel.',
+    capex: 'Upfront capital investment in million US dollars.',
+    discountRate: 'Displayed for screening context; this simplified NPV uses undiscounted net revenue minus CAPEX.',
 };
