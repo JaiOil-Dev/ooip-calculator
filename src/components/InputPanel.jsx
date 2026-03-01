@@ -85,11 +85,33 @@ export default function InputPanel({ inputs, onChange, onOrinocoMode, isOrinocoM
         <InputField label="RF Low - P90" id="rfLow" value={inputs.rfLow} onChange={(v) => onChange('rfLow', v)} unit="%" min={0} max={100} step={0.1} tooltipKey="rfLow" placeholder="15" />
         <InputField label="RF Best - P50" id="rfBest" value={inputs.rfBest} onChange={(v) => onChange('rfBest', v)} unit="%" min={0} max={100} step={0.1} tooltipKey="rfBest" placeholder="35" />
         <InputField label="RF High - P10" id="rfHigh" value={inputs.rfHigh} onChange={(v) => onChange('rfHigh', v)} unit="%" min={0} max={100} step={0.1} tooltipKey="rfHigh" placeholder="55" />
+
+        <div className="mt-4 border-t border-gray-200 pt-3">
+          <div className="flex items-center justify-between mb-1">
+            <label htmlFor="rfScenario" className="text-xs font-semibold text-navy uppercase tracking-wide">Recovery Factor Scenario</label>
+            <span className="text-lg font-black text-navy">{Number(inputs.rfScenario || 0).toFixed(1)}%</span>
+          </div>
+          <input
+            id="rfScenario"
+            type="range"
+            min={5}
+            max={70}
+            step={0.1}
+            value={inputs.rfScenario}
+            onChange={(e) => onChange('rfScenario', e.target.value)}
+            className="w-full accent-steel"
+          />
+          <p className="text-xs text-gray-500 mt-1">Move slider to explore recovery scenarios</p>
+        </div>
       </div>
 
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <h3 className="text-xs font-bold text-navy uppercase tracking-widest mb-3 border-b border-gray-200 pb-1">Commercial</h3>
         <InputField label="Oil Price" id="oilPrice" value={inputs.oilPrice} onChange={(v) => onChange('oilPrice', v)} unit="$/bbl" min={0} step={0.5} tooltipKey="oilPrice" placeholder="70" />
+        <InputField label="Royalty" id="royalty" value={inputs.royalty} onChange={(v) => onChange('royalty', v)} unit="%" min={0} max={100} step={0.01} tooltipKey="royalty" placeholder="16.67" />
+        <InputField label="OPEX" id="opex" value={inputs.opex} onChange={(v) => onChange('opex', v)} unit="$/bbl" min={0} step={0.1} tooltipKey="opex" placeholder="12" />
+        <InputField label="CAPEX" id="capex" value={inputs.capex} onChange={(v) => onChange('capex', v)} unit="$MM" min={0} step={0.1} tooltipKey="capex" placeholder="50" />
+        <InputField label="Discount Rate" id="discountRate" value={inputs.discountRate} onChange={(v) => onChange('discountRate', v)} unit="%" min={0} step={0.1} tooltipKey="discountRate" placeholder="10" />
       </div>
     </div>
   );

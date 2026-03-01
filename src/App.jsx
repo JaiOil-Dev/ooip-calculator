@@ -1,6 +1,6 @@
 /*
  * OOIP & Reserves Calculator v1.0
- * Built by Jainer Campo, Petroleum Engineer
+ * Built by Jainer M., Petroleum Engineer
  * Portfolio tool for volumetric reserves estimation with specific application to
  * Venezuelan extra-heavy oil reservoirs, Orinoco Belt.
  */
@@ -35,13 +35,21 @@ export default function App() {
       sw: toNum(inputs.sw),
       bo: toNum(inputs.bo),
     };
+    const economics = {
+      oilPrice: toNum(inputs.oilPrice),
+      royalty: toNum(inputs.royalty),
+      opex: toNum(inputs.opex),
+      capex: toNum(inputs.capex),
+      discountRate: toNum(inputs.discountRate),
+    };
     const ooipSTB = calcOOIP(p);
     return calcReserves(
       ooipSTB,
       toNum(inputs.rfLow),
       toNum(inputs.rfBest),
       toNum(inputs.rfHigh),
-      toNum(inputs.oilPrice)
+      economics,
+      toNum(inputs.rfScenario)
     );
   }, [inputs]);
 
@@ -72,7 +80,7 @@ export default function App() {
                 OOIP &amp; Reserves Calculator
               </h1>
               <p className="text-blue-300 text-xs mt-0.5">
-                Volumetric Estimation Tool &mdash; Petroleum Engineering Portfolio &middot; Jainer Campo
+                Volumetric Estimation Tool &mdash; Petroleum Engineering Portfolio &middot; Jainer M.
               </p>
             </div>
             <div className="ml-auto hidden sm:flex items-center gap-3">
@@ -126,10 +134,7 @@ export default function App() {
 
       <footer className="bg-navy-dark text-center py-3 border-t border-navy-light/20">
         <p className="text-xs text-blue-400">
-          Built by <span className="text-white font-semibold">Jainer Campo</span> &middot; Petroleum Engineer, BSc IUP Santiago Mari&ntilde;o &middot;{' '}
-          <a href="https://JaiOil-Dev.github.io/dca-app/" target="_blank" rel="noopener noreferrer" className="text-steel-light hover:text-white transition-colors">
-            Portfolio Tool #1: DCA Pro
-          </a>
+          Built by Jainer M. &middot; Petroleum Engineer
         </p>
       </footer>
     </div>
